@@ -1,0 +1,70 @@
+[
+  {
+    "slug": "execute-launch",
+    "props": {
+      "brandName": "Execute",
+      "headline": "Stop planning. Start executing.",
+      "features": [
+        { "title": "Daily focus blocks", "icon": "focus" },
+        { "title": "Streak tracking", "icon": "streak" },
+        { "title": "Zero-clutter tasks", "icon": "tasks" }
+      ],
+      "phoneTitle": "Today",
+      "tasks": [
+        "Ship landing page",
+        "Review pull requests",
+        "45 min deep work",
+        "Plan tomorrow",
+        "Inbox zero"
+      ],
+      "tagline": "The to-do app that gets out of your way.",
+      "cta": "Join the waitlist",
+      "colors": { "background": "#0B0B0F", "accent": "#7C5CFF", "text": "#FFFFFF" },
+      "durationInSeconds": 30
+    }
+  },
+  {
+    "slug": "ledgerly-beta",
+    "props": {
+      "brandName": "Ledgerly",
+      "headline": "Know your numbers. Every morning.",
+      "features": [
+        { "title": "Live cash dashboard", "icon": "chart" },
+        { "title": "Auto-categorized spend", "icon": "bolt" },
+        { "title": "Bank-grade security", "icon": "shield" },
+        { "title": "Month-end in minutes", "icon": "calendar" }
+      ],
+      "phoneTitle": "Close checklist",
+      "tasks": [
+        "Sync bank feeds",
+        "Match receipts",
+        "Flag anomalies",
+        "Approve payroll",
+        "Send investor update",
+        "Lock the books"
+      ],
+      "tagline": "Finance that runs itself, so you can run the company.",
+      "cta": "Get early access",
+      "colors": { "background": "#06140F", "accent": "#18C37E", "text": "#F2FFF8" },
+      "durationInSeconds": 24
+    }
+  },
+  {
+    "slug": "fitloop-launch",
+    "props": {
+      "brandName": "Fitloop",
+      "headline": "No gym? No excuses.",
+      "features": [
+        { "title": "10-minute workouts", "icon": "bolt" },
+        { "title": "Adaptive plans", "icon": "sparkle" },
+        { "title": "Weekly streaks", "icon": "streak" }
+      ],
+      "phoneTitle": "Today's loop",
+      "tasks": ["Warm-up", "Push-ups x20", "Plank 60s", "Cool-down"],
+      "tagline": "Small daily wins that add up.",
+      "cta": "Download free",
+      "colors": { "background": "#140A05", "accent": "#FF6B2C", "text": "#FFF6F0" },
+      "durationInSeconds": 18
+    }
+  }
+]

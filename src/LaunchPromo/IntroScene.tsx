@@ -27,7 +27,7 @@ export const IntroScene: React.FC<{
   const contentWidth = width - 160;
   const fontSize = Math.max(
     72,
-    Math.min(124, Math.floor(contentWidth / (longestLine * 0.52))),
+    Math.min(124, Math.floor(contentWidth / (longestLine * 0.57))),
   );
 
   const typedAt = (i: number) => i * WORD_GAP;

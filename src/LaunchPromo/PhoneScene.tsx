@@ -222,11 +222,15 @@ export const PhoneScene: React.FC<{
   const checkAt = (i: number) => Math.round(firstCheck + i * interval);
   const done = tasks.filter((_, i) => frame >= checkAt(i)).length;
 
-  const progress = interpolate(
-    frame,
-    [0, ...tasks.map((_, i) => checkAt(i) + 8)],
-    [0, ...tasks.map((_, i) => (i + 1) / tasks.length)],
-    { ...clamp, easing: Easing.bezier(0.16, 1, 0.3, 1) },
+  // Each check adds its own eased step, so the bar never runs ahead of the list.
+  const progress = tasks.reduce(
+    (sum, _, i) =>
+      sum +
+      interpolate(frame, [checkAt(i), checkAt(i) + 14], [0, 1 / tasks.length], {
+        ...clamp,
+        easing: Easing.bezier(0.16, 1, 0.3, 1),
+      }),
+    0,
   );
 
   return (
