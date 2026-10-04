@@ -6,7 +6,7 @@ import {
   useCurrentFrame,
   useVideoConfig,
 } from "remotion";
-import { enter, exit, mix, STAGGER } from "./motion";
+import { enter, exit, mix, STAGGER } from "../shared/motion";
 
 const WORD_GAP = STAGGER + 1;
 
@@ -111,11 +111,16 @@ export const IntroScene: React.FC<{
             background: `linear-gradient(90deg, ${accent}, ${mix(accent, 55, "white")})`,
             boxShadow: `0 0 40px ${mix(accent, 70)}`,
             transformOrigin: "left center",
-            scale: `${interpolate(frame, [underlineStart, underlineStart + 16], [0, 1], {
-              extrapolateLeft: "clamp",
-              extrapolateRight: "clamp",
-              easing: Easing.bezier(0.16, 1, 0.3, 1),
-            })} 1`,
+            scale: `${interpolate(
+              frame,
+              [underlineStart, underlineStart + 16],
+              [0, 1],
+              {
+                extrapolateLeft: "clamp",
+                extrapolateRight: "clamp",
+                easing: Easing.bezier(0.16, 1, 0.3, 1),
+              },
+            )} 1`,
           }}
         />
       </div>

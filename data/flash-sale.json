@@ -1,0 +1,47 @@
+[
+  {
+    "slug": "flash-sale-velocity",
+    "composition": "FlashSale",
+    "props": {
+      "headline": "Flash Sale",
+      "tickerText": "48 hours only",
+      "hero": { "image": "products/sneaker.svg", "name": "Velocity Runner 2", "oldPrice": 2999, "newPrice": 1799 },
+      "discountLabel": "-40%",
+      "more": [
+        { "image": "products/headphones.svg", "name": "Pulse Buds", "price": 1299 },
+        { "image": "products/watch.svg", "name": "Stride Watch", "price": 2499 },
+        { "image": "products/backpack.svg", "name": "Daypack 20L", "price": 999 }
+      ],
+      "moreTitle": "More deals",
+      "currency": "INR",
+      "locale": "en-IN",
+      "timerSeconds": 86382,
+      "timerLabel": "Ends in",
+      "cta": "Shop now",
+      "code": "FLASH40",
+      "colors": { "background": "#111111", "sale": "#FF2E2E", "highlight": "#FFD400", "text": "#FFFFFF" }
+    }
+  },
+  {
+    "slug": "black-friday-audio-feed",
+    "composition": "FlashSale-Feed",
+    "props": {
+      "headline": "Black Friday",
+      "tickerText": "Biggest drop of the year",
+      "hero": { "image": "products/headphones.svg", "name": "Studio Max ANC", "oldPrice": 349, "newPrice": 199 },
+      "discountLabel": "-43%",
+      "more": [
+        { "image": "products/speaker.svg", "name": "Boom Mini", "price": 59 },
+        { "image": "products/watch.svg", "name": "Stride Watch", "price": 149 }
+      ],
+      "moreTitle": "Also on sale",
+      "currency": "USD",
+      "locale": "en-US",
+      "timerSeconds": 21599,
+      "timerLabel": "Deal ends in",
+      "cta": "Grab it",
+      "code": "",
+      "colors": { "background": "#0B0B0B", "sale": "#7C5CFF", "highlight": "#00E5A0", "text": "#FFFFFF" }
+    }
+  }
+]

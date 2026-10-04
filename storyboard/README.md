@@ -8,18 +8,18 @@ These are storyboards for 10 new templates. Each one is modeled on a motion form
 
 | # | Template | Modeled on | Format | Length | Build effort |
 |---|----------|-----------|--------|--------|-------------|
-| 01 | [KineticType](01-kinetic-typography-ad.md) | 2026's #1 cited trend: text *is* the animation | 9:16 + 1:1 | 15s | ★★☆ |
+| 01 ✅ | [KineticType](01-kinetic-typography-ad.md) | 2026's #1 cited trend: text *is* the animation | 9:16 + 1:1 | 15s | ★★☆ |
 | 02 | [PremiumReveal](02-premium-product-reveal.md) | Apple-style restrained product launch | 16:9 + 9:16 | 30s | ★★★ |
 | 03 | [Wrapped](03-wrapped-year-in-review.md) | Spotify Wrapped personalized stats story | 9:16 | 20–40s | ★★★ |
 | 04 | [UIWalkthrough](04-saas-ui-walkthrough.md) | Linear / Stripe / Notion launch films | 16:9 | 45s | ★★★ |
 | 05 | [HookCaptions](05-hook-captions.md) | Hormozi / MrBeast word-by-word captions | 9:16 | any | ★★☆ |
-| 06 | [FlashSale](06-flash-sale-countdown.md) | E-commerce drops, Black Friday countdowns | 9:16 + 4:5 | 10–15s | ★☆☆ |
-| 07 | [StatStory](07-data-stat-story.md) | Animated infographic / impact report | 16:9 + 9:16 | 30–60s | ★★☆ |
+| 06 ✅ | [FlashSale](06-flash-sale-countdown.md) | E-commerce drops, Black Friday countdowns | 9:16 + 4:5 | 10–15s | ★☆☆ |
+| 07 ✅ | [StatStory](07-data-stat-story.md) | Animated infographic / impact report | 16:9 + 9:16 | 30–60s | ★★☆ |
 | 08 | [GrainOpener](08-grain-texture-opener.md) | 2026 "authentic" trend: grain, collage, grunge | 16:9 + 9:16 | 8–12s | ★★☆ |
 | 09 | [BrandKit](09-logo-reveal-lower-thirds.md) | Envato/Motion Array staples: logo stings, lower thirds | 16:9, transparent | 3–6s each | ★☆☆ |
 | 10 | [HypeCut](10-beat-synced-hype-montage.md) | Nike-style sports/fitness reels | 9:16 | 15–30s | ★★★ |
 
-Effort: ★☆☆ = one afternoon, ★★★ = needs new building blocks (camera moves, audio analysis, media slots).
+✅ = built (see `src/`). Effort: ★☆☆ = one afternoon, ★★★ = needs new building blocks (camera moves, audio analysis, media slots).
 
 ## Suggested build order
 

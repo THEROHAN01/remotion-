@@ -6,7 +6,7 @@ import {
   useCurrentFrame,
   useVideoConfig,
 } from "remotion";
-import { mix } from "./motion";
+import { mix } from "../shared/motion";
 
 // Faint technical grid + an accent glow that drifts (eased) between scene focal points.
 export const Background: React.FC<{

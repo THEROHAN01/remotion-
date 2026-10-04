@@ -34,11 +34,24 @@ export const exit = (frame: number, sceneDuration: number, length = 10) =>
 export const mix = (color: string, percent: number, other = "transparent") =>
   `color-mix(in srgb, ${color} ${percent}%, ${other})`;
 
-// Splits the total duration with the same ratios as the original 30s cut (3 / 9 / 10 / 8).
-export const sceneTimings = (durationInFrames: number) => {
-  const intro = Math.round(durationInFrames * (3 / 30));
-  const features = Math.round(durationInFrames * (9 / 30));
-  const phone = Math.round(durationInFrames * (10 / 30));
-  const outro = durationInFrames - intro - features - phone;
-  return { intro, features, phone, outro };
-};
+export const clamp = {
+  extrapolateLeft: "clamp",
+  extrapolateRight: "clamp",
+} as const;
+
+// Text width estimate (in em per character) for fitting text into a box.
+// Conservative on purpose; verify with rendered stills.
+export const fitFontSize = (
+  text: string,
+  maxWidth: number,
+  emPerChar: number,
+  max: number,
+  min = 24,
+) =>
+  Math.max(
+    min,
+    Math.min(
+      max,
+      Math.floor(maxWidth / (Math.max(1, text.length) * emPerChar)),
+    ),
+  );

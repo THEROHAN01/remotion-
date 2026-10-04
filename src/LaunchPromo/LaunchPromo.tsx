@@ -1,27 +1,28 @@
-import { loadFont } from "@remotion/fonts";
 import type React from "react";
 import {
   AbsoluteFill,
   type CalculateMetadataFunction,
   Series,
-  staticFile,
   useVideoConfig,
 } from "remotion";
 import { Background } from "./Background";
 import { FeaturesScene } from "./FeaturesScene";
 import { IntroScene } from "./IntroScene";
-import { sceneTimings } from "./motion";
 import { OutroScene } from "./OutroScene";
 import { PhoneScene } from "./PhoneScene";
+import { fonts } from "../shared/fonts";
 import type { LaunchPromoProps } from "./schema";
 
-// Bundled locally (public/fonts) so batch renders work offline.
-const fontFamily = "Inter";
-loadFont({
-  family: fontFamily,
-  url: staticFile("fonts/Inter-Variable.woff2"),
-  weight: "100 900",
-});
+const fontFamily = fonts.inter;
+
+// Splits the total duration with the same ratios as the original 30s cut (3 / 9 / 10 / 8).
+export const sceneTimings = (durationInFrames: number) => {
+  const intro = Math.round(durationInFrames * (3 / 30));
+  const features = Math.round(durationInFrames * (9 / 30));
+  const phone = Math.round(durationInFrames * (10 / 30));
+  const outro = durationInFrames - intro - features - phone;
+  return { intro, features, phone, outro };
+};
 
 export const calculateLaunchPromoMetadata: CalculateMetadataFunction<
   LaunchPromoProps
@@ -48,7 +49,11 @@ export const LaunchPromo: React.FC<LaunchPromoProps> = ({
     <AbsoluteFill style={{ fontFamily, color: text }}>
       <Background background={background} accent={accent} text={text} />
       <Series>
-        <Series.Sequence name="Hook" durationInFrames={t.intro} premountFor={fps}>
+        <Series.Sequence
+          name="Hook"
+          durationInFrames={t.intro}
+          premountFor={fps}
+        >
           <IntroScene headline={headline} accent={accent} text={text} />
         </Series.Sequence>
         <Series.Sequence
@@ -63,7 +68,11 @@ export const LaunchPromo: React.FC<LaunchPromoProps> = ({
             background={background}
           />
         </Series.Sequence>
-        <Series.Sequence name="Phone" durationInFrames={t.phone} premountFor={fps}>
+        <Series.Sequence
+          name="Phone"
+          durationInFrames={t.phone}
+          premountFor={fps}
+        >
           <PhoneScene
             title={phoneTitle}
             tasks={tasks}
@@ -72,7 +81,11 @@ export const LaunchPromo: React.FC<LaunchPromoProps> = ({
             background={background}
           />
         </Series.Sequence>
-        <Series.Sequence name="Outro" durationInFrames={t.outro} premountFor={fps}>
+        <Series.Sequence
+          name="Outro"
+          durationInFrames={t.outro}
+          premountFor={fps}
+        >
           <OutroScene
             brandName={brandName}
             tagline={tagline}

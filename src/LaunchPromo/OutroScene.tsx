@@ -5,7 +5,7 @@ import {
   useCurrentFrame,
   useVideoConfig,
 } from "remotion";
-import { enter, mix, POP, STAGGER } from "./motion";
+import { enter, mix, POP, STAGGER } from "../shared/motion";
 
 export const OutroScene: React.FC<{
   readonly brandName: string;

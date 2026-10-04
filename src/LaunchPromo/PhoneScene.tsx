@@ -7,7 +7,7 @@ import {
   useCurrentFrame,
   useVideoConfig,
 } from "remotion";
-import { enter, exit, mix, POP, STAGGER } from "./motion";
+import { enter, exit, mix, POP, STAGGER } from "../shared/motion";
 
 const clamp = {
   extrapolateLeft: "clamp",
@@ -56,7 +56,9 @@ const TaskRow: React.FC<{
         scale: checked ? 1 + Math.sin(Math.min(1, pop) * Math.PI) * 0.03 : 1,
       }}
     >
-      <div style={{ position: "relative", width: 62, height: 62, flexShrink: 0 }}>
+      <div
+        style={{ position: "relative", width: 62, height: 62, flexShrink: 0 }}
+      >
         {checked ? (
           <div
             style={{
@@ -163,7 +165,11 @@ const ProgressRing: React.FC<{
         translate: `0px ${(1 - p) * 60}px`,
       }}
     >
-      <svg width={size} height={size} style={{ flexShrink: 0, rotate: "-90deg" }}>
+      <svg
+        width={size}
+        height={size}
+        style={{ flexShrink: 0, rotate: "-90deg" }}
+      >
         <circle
           cx={size / 2}
           cy={size / 2}

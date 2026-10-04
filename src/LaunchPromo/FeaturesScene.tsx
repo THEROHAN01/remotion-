@@ -7,7 +7,7 @@ import {
   useVideoConfig,
 } from "remotion";
 import { Icon } from "./Icon";
-import { enter, exit, mix, STAGGER } from "./motion";
+import { enter, exit, mix, STAGGER } from "../shared/motion";
 import type { LaunchPromoProps } from "./schema";
 
 export const FeaturesScene: React.FC<{
@@ -34,11 +34,19 @@ export const FeaturesScene: React.FC<{
     >
       {features.map((feature, i) => {
         const p = enter(frame, fps, 4 + i * STAGGER);
-        const exitP = exit(frame, durationInFrames - (features.length - 1 - i) * 3);
+        const exitP = exit(
+          frame,
+          durationInFrames - (features.length - 1 - i) * 3,
+        );
         const spotStart = spotlightStart + i * spotlightLength;
         const spot = interpolate(
           frame,
-          [spotStart, spotStart + 10, spotStart + spotlightLength, spotStart + spotlightLength + 10],
+          [
+            spotStart,
+            spotStart + 10,
+            spotStart + spotlightLength,
+            spotStart + spotlightLength + 10,
+          ],
           [0, 1, 1, 0],
           {
             extrapolateLeft: "clamp",

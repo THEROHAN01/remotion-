@@ -1,0 +1,38 @@
+[
+  {
+    "slug": "kinetic-execute",
+    "composition": "KineticType",
+    "props": {
+      "beats": [
+        { "text": "Every", "style": "slam", "seconds": 1.3 },
+        { "text": "Every / single", "style": "stack", "seconds": 1.2 },
+        { "text": "Day.", "style": "invert", "seconds": 1.2 },
+        { "text": "You open / 14 tabs / to do / 1 thing", "style": "wipe", "seconds": 2.8 },
+        { "text": "14", "style": "shatter", "seconds": 1.8 },
+        { "text": "One tab. / One plan. / Zero noise.", "style": "highlight", "accentWord": "Zero", "seconds": 3.2 }
+      ],
+      "brandName": "Execute",
+      "cta": "Join the waitlist",
+      "outroSeconds": 3.5,
+      "colors": { "background": "#0A0A0A", "text": "#FFFFFF", "accent": "#FF3B30" }
+    }
+  },
+  {
+    "slug": "kinetic-summit-square",
+    "composition": "KineticType-Square",
+    "props": {
+      "beats": [
+        { "text": "Build", "style": "slam", "seconds": 1.0 },
+        { "text": "Build / ship / repeat", "style": "stack", "seconds": 1.6 },
+        { "text": "Nov 14", "style": "invert", "seconds": 1.4 },
+        { "text": "2 days / 40 talks / 1 city", "style": "wipe", "seconds": 2.6 },
+        { "text": "40", "style": "shatter", "seconds": 1.6 },
+        { "text": "The builders / summit is / back.", "style": "highlight", "accentWord": "back", "seconds": 2.8 }
+      ],
+      "brandName": "Shipfest",
+      "cta": "Get your ticket",
+      "outroSeconds": 3,
+      "colors": { "background": "#F2EDE4", "text": "#141414", "accent": "#2B50FF" }
+    }
+  }
+]
