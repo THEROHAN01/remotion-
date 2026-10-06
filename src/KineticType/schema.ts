@@ -23,6 +23,13 @@ export const kineticTypeSchema = z.object({
     )
     .min(1),
   brandName: z.string().min(1),
+  // Optional logo (path inside public/). Without it the outro shows a letter mark.
+  logo: z.string().optional(),
+  // Card color behind the logo, for logos that don't read on the background.
+  logoBackground: zColor().optional(),
+  // Set false when the logo already contains the company name.
+  showBrandName: z.boolean().optional(),
+  url: z.string().optional(),
   cta: z.string().min(1),
   outroSeconds: z.number().min(1).max(10),
   colors: z.object({

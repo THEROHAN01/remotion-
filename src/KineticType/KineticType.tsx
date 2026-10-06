@@ -30,6 +30,10 @@ const components = {
 export const KineticType: React.FC<KineticTypeProps> = ({
   beats,
   brandName,
+  logo,
+  logoBackground,
+  showBrandName,
+  url,
   cta,
   outroSeconds,
   colors,
@@ -55,7 +59,15 @@ export const KineticType: React.FC<KineticTypeProps> = ({
         durationInFrames={Math.round(outroSeconds * fps)}
         premountFor={fps}
       >
-        <Outro brandName={brandName} cta={cta} colors={colors} />
+        <Outro
+          brandName={brandName}
+          logo={logo}
+          logoBackground={logoBackground}
+          showBrandName={showBrandName ?? true}
+          url={url}
+          cta={cta}
+          colors={colors}
+        />
       </Series.Sequence>
     </Series>
   );

@@ -3,17 +3,45 @@ import {
   AbsoluteFill,
   Easing,
   interpolate,
+  Img,
   random,
+  staticFile,
   useCurrentFrame,
   useVideoConfig,
 } from "remotion";
 import { fonts } from "../shared/fonts";
-import { clamp, enter, fitFontSize } from "../shared/motion";
+import { clamp, enter, fitFontSize, mix } from "../shared/motion";
 import type { Beat, KineticTypeProps } from "./schema";
 
 type BeatProps = {
   readonly beat: Beat;
   readonly colors: KineticTypeProps["colors"];
+};
+
+// WCAG relative luminance for #rgb/#rrggbb; null for other color formats.
+const luminance = (color: string) => {
+  const m = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(color.trim());
+  if (!m) return null;
+  const hex = m[1].length === 3 ? m[1].replace(/./g, "$&$&") : m[1];
+  const [r, g, b] = [0, 2, 4].map((i) => {
+    const c = parseInt(hex.slice(i, i + 2), 16) / 255;
+    return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+  });
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+};
+
+const contrast = (a: number, b: number) =>
+  (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+
+// Text color for type sitting on the accent: whichever palette color reads better.
+const onAccent = (colors: KineticTypeProps["colors"]) => {
+  const [acc, txt, bg] = [colors.accent, colors.text, colors.background].map(
+    luminance,
+  );
+  if (acc === null || txt === null || bg === null) return colors.background;
+  return contrast(acc, txt) > contrast(acc, bg)
+    ? colors.text
+    : colors.background;
 };
 
 const SLAM = { damping: 14, stiffness: 280, mass: 0.6 };
@@ -155,7 +183,7 @@ export const Invert: React.FC<BeatProps> = ({ beat, colors }) => {
           style={{
             ...base,
             fontSize,
-            color: colors.background,
+            color: onAccent(colors),
             textAlign: "center",
             scale: interpolate(p, [0, 1], [0.55, 1]),
           }}
@@ -319,7 +347,7 @@ export const Highlight: React.FC<BeatProps> = ({ beat, colors }) => {
                     position: "relative",
                     zIndex: 0,
                     color:
-                      isAccent && mark > 0.5 ? colors.background : colors.text,
+                      isAccent && mark > 0.5 ? onAccent(colors) : colors.text,
                   }}
                 >
                   {isAccent ? (
@@ -347,15 +375,25 @@ export const Highlight: React.FC<BeatProps> = ({ beat, colors }) => {
 
 export const Outro: React.FC<{
   brandName: string;
+  logo?: string;
+  logoBackground?: string;
+  showBrandName: boolean;
+  url?: string;
   cta: string;
   colors: KineticTypeProps["colors"];
-}> = ({ brandName, cta, colors }) => {
+}> = ({ brandName, logo, logoBackground, showBrandName, url, cta, colors }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const { s, maxW } = useBox();
   const mark = enter(frame, fps, 0, { damping: 12, stiffness: 220, mass: 0.6 });
   const nameIn = enter(frame, fps, 6);
   const ctaIn = enter(frame, fps, 12);
+  const urlIn = enter(frame, fps, 18);
+  // Same spring for the logo and the letter mark; the logo rotates less because it is wide.
+  const markMotion = {
+    scale: interpolate(mark, [0, 1], [0.2, 1]),
+    rotate: `${(1 - mark) * (logo ? 12 : 90)}deg`,
+  };
   return (
     <AbsoluteFill
       style={{
@@ -365,42 +403,68 @@ export const Outro: React.FC<{
         gap: 40 * s,
       }}
     >
-      <div
-        style={{
-          ...base,
-          width: 240 * s,
-          height: 240 * s,
-          borderRadius: 48 * s,
-          backgroundColor: colors.accent,
-          color: colors.background,
-          fontSize: 170 * s,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          lineHeight: 1,
-          scale: interpolate(mark, [0, 1], [0.2, 1]),
-          rotate: `${(1 - mark) * 90}deg`,
-        }}
-      >
-        {brandName.charAt(0)}
-      </div>
-      <div
-        style={{
-          ...base,
-          fontSize: fitFontSize(brandName, maxW, EM, 190 * s),
-          color: colors.text,
-          opacity: nameIn,
-          translate: `0px ${(1 - nameIn) * 30}px`,
-        }}
-      >
-        {brandName}
-      </div>
+      {logo ? (
+        <div
+          style={{
+            padding: logoBackground ? `${44 * s}px ${64 * s}px` : 0,
+            borderRadius: 48 * s,
+            backgroundColor: logoBackground ?? "transparent",
+            boxShadow: logoBackground
+              ? `0 30px 90px ${mix(colors.accent, 45)}`
+              : undefined,
+            ...markMotion,
+          }}
+        >
+          <Img
+            src={staticFile(logo)}
+            style={{
+              display: "block",
+              width: Math.min(maxW * 0.66, 600 * s),
+              height: Math.min(maxW * 0.46, 414 * s),
+              objectFit: "contain",
+            }}
+          />
+        </div>
+      ) : (
+        <div
+          style={{
+            ...base,
+            width: 240 * s,
+            height: 240 * s,
+            borderRadius: 48 * s,
+            backgroundColor: colors.accent,
+            color: colors.background,
+            fontSize: 170 * s,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            lineHeight: 1,
+            ...markMotion,
+          }}
+        >
+          {brandName.charAt(0)}
+        </div>
+      )}
+      {showBrandName ? (
+        <div
+          style={{
+            ...base,
+            fontSize: fitFontSize(brandName, maxW, EM, 190 * s),
+            color: colors.text,
+            opacity: nameIn,
+            translate: `0px ${(1 - nameIn) * 30}px`,
+          }}
+        >
+          {brandName}
+        </div>
+      ) : null}
       <div
         style={{
           fontFamily: fonts.spaceGrotesk,
           fontWeight: 600,
-          fontSize: 58 * s,
-          color: colors.text,
+          fontSize: (logo ? 64 : 58) * s,
+          color: logo ? colors.background : colors.text,
+          backgroundColor: logo ? colors.text : "transparent",
           border: `3px solid ${colors.text}`,
           borderRadius: 999,
           padding: `${20 * s}px ${48 * s}px`,
@@ -410,6 +474,23 @@ export const Outro: React.FC<{
       >
         {cta}
       </div>
+      {url ? (
+        <div
+          style={{
+            marginTop: -16 * s,
+            fontFamily: fonts.spaceGrotesk,
+            fontWeight: 500,
+            fontSize: Math.min(44 * s, maxW / (url.length * 0.55)),
+            letterSpacing: "0.01em",
+            whiteSpace: "nowrap",
+            color: mix(colors.text, 75, colors.background),
+            opacity: urlIn,
+            translate: `0px ${(1 - urlIn) * 20}px`,
+          }}
+        >
+          {url}
+        </div>
+      ) : null}
     </AbsoluteFill>
   );
 };
