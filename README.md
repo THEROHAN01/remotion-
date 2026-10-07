@@ -17,6 +17,21 @@ Shared code lives in `src/shared/` (`motion.ts` for springs/eases/helpers, `font
 - **StatStory**: headline with a highlighted phrase, then any mix of `bigNumber`, `bar`, `line` and `iconGrid` slides, then a takeaway. One highlight color against grey context, direct value labels and a source line on every slide. Duration comes from the slide list.
 - **GrainOpener**: a 10s textured opener with a 3-2-1 film leader and light leak. Torn paper strips slap on in stop-motion (`stopMotionFps`), 1–3 photos become halftone cutouts taped to the board (`tint` prints one in the accent color), the title is rubber-stamped letter by letter, the subtitle typewrites, and a film burn fades to black. Animated grain and scratches run on top. `seed` changes every torn edge and jitter deterministically. `public/photos/*.svg` are placeholder images; use your own photos via a path or URL.
 
+## Sound effects
+
+Templates can play frame-accurate sound effects from `public/sfx/` (see `public/sfx/CREDITS.md`; CC0 Kenney sounds plus synthesized ones, rebuilt with `scripts/build-sfx.sh`). Turn them on per variant:
+
+```json
+"sound": { "sfx": true, "sfxVolume": 0.9 }
+```
+
+Leave `sound` out for a silent render. Cues are placed by the template itself (`<Sfx name="…" at={frame} />` from `src/shared/sfx.tsx`), so they stay in sync whatever the text or timing.
+
+| Template | Sound support |
+|---|---|
+| KineticType | ✅ slam: impact + sub · stack: click per line · invert: thud + sub · wipe: panned whoosh per fragment · shatter: hit + glass break · highlight: ticks + marker swipe · outro: chime, pop, tick |
+| LaunchPromo, FlashSale, StatStory, GrainOpener | not yet |
+
 ## LaunchPromo
 
 A 1080×1920 (Reels/Shorts) 30fps promo video. Every bit of text, the colors, the feature list, the task list and the duration come from props validated by a Zod schema (`src/LaunchPromo/schema.ts`).

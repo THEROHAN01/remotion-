@@ -1,5 +1,6 @@
 import { zColor } from "@remotion/zod-types";
 import { z } from "zod";
+import { soundSchema } from "../shared/sfx";
 
 export const beatStyles = [
   "slam",
@@ -30,6 +31,7 @@ export const kineticTypeSchema = z.object({
   // Set false when the logo already contains the company name.
   showBrandName: z.boolean().optional(),
   url: z.string().optional(),
+  sound: soundSchema,
   cta: z.string().min(1),
   outroSeconds: z.number().min(1).max(10),
   colors: z.object({

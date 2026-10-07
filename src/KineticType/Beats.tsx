@@ -11,6 +11,7 @@ import {
 } from "remotion";
 import { fonts } from "../shared/fonts";
 import { clamp, enter, fitFontSize, mix } from "../shared/motion";
+import { Sfx } from "../shared/sfx";
 import type { Beat, KineticTypeProps } from "./schema";
 
 type BeatProps = {
@@ -120,6 +121,8 @@ export const Slam: React.FC<BeatProps> = ({ beat, colors }) => {
         {beat.text}
       </div>
       <Flash color={colors.text} />
+      <Sfx name="impact-heavy" at={0} volume={0.75} />
+      <Sfx name="sub-drop" at={0} volume={0.45} />
     </AbsoluteFill>
   );
 };
@@ -158,6 +161,9 @@ export const Stack: React.FC<BeatProps> = ({ beat, colors }) => {
           </div>
         );
       })}
+      {ls.map((_, i) => (
+        <Sfx key={`sfx${i}`} name="click" at={i * 6} volume={0.55} />
+      ))}
     </AbsoluteFill>
   );
 };
@@ -191,6 +197,8 @@ export const Invert: React.FC<BeatProps> = ({ beat, colors }) => {
           {l}
         </div>
       ))}
+      <Sfx name="thud-soft" at={0} volume={0.65} />
+      <Sfx name="sub-drop" at={0} volume={0.45} />
     </AbsoluteFill>
   );
 };
@@ -243,6 +251,14 @@ export const Wipe: React.FC<BeatProps> = ({ beat, colors }) => {
           </div>
         ))}
       </div>
+      {frags.map((_, i) => (
+        <Sfx
+          key={`sfx${i}`}
+          name={i % 2 === 0 ? "whoosh-lr" : "whoosh-rl"}
+          at={i * per}
+          volume={0.55}
+        />
+      ))}
     </AbsoluteFill>
   );
 };
@@ -294,6 +310,8 @@ export const Shatter: React.FC<BeatProps> = ({ beat, colors }) => {
           );
         })}
       </div>
+      <Sfx name="impact-heavy" at={0} volume={0.6} />
+      <Sfx name="glass-shatter" at={breakAt} volume={0.9} />
     </AbsoluteFill>
   );
 };
@@ -369,6 +387,10 @@ export const Highlight: React.FC<BeatProps> = ({ beat, colors }) => {
           </div>
         );
       })}
+      {ls.map((_, i) => (
+        <Sfx key={`sfx${i}`} name="tick" at={i * 6} volume={0.45} />
+      ))}
+      <Sfx name="marker" at={markAt} volume={0.6} />
     </AbsoluteFill>
   );
 };
@@ -474,6 +496,9 @@ export const Outro: React.FC<{
       >
         {cta}
       </div>
+      <Sfx name="chime" at={0} volume={0.65} />
+      <Sfx name="pop" at={12} volume={0.6} />
+      {url ? <Sfx name="tick" at={18} volume={0.4} /> : null}
       {url ? (
         <div
           style={{

@@ -141,6 +141,10 @@
         "background": "#0B1B33",
         "text": "#FFFFFF",
         "accent": "#2F5BFF"
+      },
+      "sound": {
+        "sfx": true,
+        "sfxVolume": 0.9
       }
     }
   }

@@ -5,6 +5,7 @@ import {
   useVideoConfig,
 } from "remotion";
 import { Highlight, Invert, Outro, Shatter, Slam, Stack, Wipe } from "./Beats";
+import { SoundProvider } from "../shared/sfx";
 import type { KineticTypeProps } from "./schema";
 
 const FPS = 30;
@@ -34,41 +35,44 @@ export const KineticType: React.FC<KineticTypeProps> = ({
   logoBackground,
   showBrandName,
   url,
+  sound,
   cta,
   outroSeconds,
   colors,
 }) => {
   const { fps } = useVideoConfig();
   return (
-    <Series>
-      {beats.map((beat, i) => {
-        const Component = components[beat.style];
-        return (
-          <Series.Sequence
-            key={i}
-            name={`${i + 1}. ${beat.style}`}
-            durationInFrames={Math.round(beat.seconds * fps)}
-            premountFor={fps}
-          >
-            <Component beat={beat} colors={colors} />
-          </Series.Sequence>
-        );
-      })}
-      <Series.Sequence
-        name="Outro"
-        durationInFrames={Math.round(outroSeconds * fps)}
-        premountFor={fps}
-      >
-        <Outro
-          brandName={brandName}
-          logo={logo}
-          logoBackground={logoBackground}
-          showBrandName={showBrandName ?? true}
-          url={url}
-          cta={cta}
-          colors={colors}
-        />
-      </Series.Sequence>
-    </Series>
+    <SoundProvider sound={sound}>
+      <Series>
+        {beats.map((beat, i) => {
+          const Component = components[beat.style];
+          return (
+            <Series.Sequence
+              key={i}
+              name={`${i + 1}. ${beat.style}`}
+              durationInFrames={Math.round(beat.seconds * fps)}
+              premountFor={fps}
+            >
+              <Component beat={beat} colors={colors} />
+            </Series.Sequence>
+          );
+        })}
+        <Series.Sequence
+          name="Outro"
+          durationInFrames={Math.round(outroSeconds * fps)}
+          premountFor={fps}
+        >
+          <Outro
+            brandName={brandName}
+            logo={logo}
+            logoBackground={logoBackground}
+            showBrandName={showBrandName ?? true}
+            url={url}
+            cta={cta}
+            colors={colors}
+          />
+        </Series.Sequence>
+      </Series>
+    </SoundProvider>
   );
 };
