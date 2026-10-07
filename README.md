@@ -8,12 +8,14 @@ Props-driven, batch-renderable motion templates. Each one has a Zod schema (edit
 | **FlashSale** | `FlashSale` (9:16), `FlashSale-Feed` (4:5) | `storyboard/06-flash-sale-countdown.md` | `data/flash-sale.json` |
 | **KineticType** | `KineticType` (9:16), `KineticType-Square` (1:1) | `storyboard/01-kinetic-typography-ad.md` | `data/kinetic-type.json` |
 | **StatStory** | `StatStory` (16:9), `StatStory-Vertical` (9:16) | `storyboard/07-data-stat-story.md` | `data/stat-story.json` |
+| **GrainOpener** | `GrainOpener` (16:9), `GrainOpener-Vertical` (9:16), 24fps | `storyboard/08-grain-texture-opener.md` | `data/grain-opener.json` |
 
 Shared code lives in `src/shared/` (`motion.ts` for springs/eases/helpers, `fonts.ts` for the bundled fonts). Storyboards for the remaining templates are in `storyboard/`.
 
 - **FlashSale**: ticker bands, product drop with a discount stamp, old→new price countdown, deal carousel, flip-clock timer, CTA and code. Prices are formatted for any currency/locale. Product images are paths in `public/` or URLs (`public/products/*.svg` are placeholder illustrations).
 - **KineticType**: the `beats` array is the script. Each beat picks a style (`slam`, `stack`, `invert`, `wipe`, `shatter`, `highlight`) and a length; use `/` in the text for line breaks or fragments. Duration = the sum of the beats + the outro.
 - **StatStory**: headline with a highlighted phrase, then any mix of `bigNumber`, `bar`, `line` and `iconGrid` slides, then a takeaway. One highlight color against grey context, direct value labels and a source line on every slide. Duration comes from the slide list.
+- **GrainOpener**: a 10s textured opener with a 3-2-1 film leader and light leak. Torn paper strips slap on in stop-motion (`stopMotionFps`), 1–3 photos become halftone cutouts taped to the board (`tint` prints one in the accent color), the title is rubber-stamped letter by letter, the subtitle typewrites, and a film burn fades to black. Animated grain and scratches run on top. `seed` changes every torn edge and jitter deterministically. `public/photos/*.svg` are placeholder images; use your own photos via a path or URL.
 
 ## LaunchPromo
 
@@ -68,5 +70,5 @@ Props are validated against the schema before rendering, so a bad entry fails wi
 
 ## Notes
 
-- Inter, Anton, Space Grotesk and Fraunces are bundled in `public/fonts` (OFL licenses included) so renders don't need network access.
+- Inter, Anton, Space Grotesk, Fraunces and Special Elite are bundled in `public/fonts` (licenses included) so renders don't need network access.
 - Remotion Agent Skills are installed in `.claude/skills` (`npx skills add remotion-dev/skills`).

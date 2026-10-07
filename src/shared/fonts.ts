@@ -29,3 +29,10 @@ loadFont({
   url: staticFile("fonts/Fraunces-Variable.woff2"),
   weight: "100 900",
 });
+
+export const typewriterFont = "Special Elite";
+loadFont({
+  family: typewriterFont,
+  url: staticFile("fonts/SpecialElite-Regular.woff2"),
+  weight: "400",
+});

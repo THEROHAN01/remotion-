@@ -1,0 +1,36 @@
+[
+  {
+    "slug": "grain-the-makers",
+    "composition": "GrainOpener",
+    "props": {
+      "title": "The Makers",
+      "subtitle": "episode 01 — stories from the workshop",
+      "photos": [
+        { "src": "photos/hands.svg" },
+        { "src": "photos/portrait.svg", "tint": true },
+        { "src": "photos/skyline.svg" }
+      ],
+      "colors": { "background": "#16130F", "paper": "#EDE6D6", "accent": "#E4572E" },
+      "grainAmount": 0.35,
+      "stopMotionFps": 8,
+      "seed": 7
+    }
+  },
+  {
+    "slug": "grain-drop-07-vertical",
+    "composition": "GrainOpener-Vertical",
+    "props": {
+      "title": "Drop 07",
+      "subtitle": "limited run · out friday",
+      "photos": [
+        { "src": "photos/portrait.svg" },
+        { "src": "photos/skyline.svg", "tint": true },
+        { "src": "photos/hands.svg" }
+      ],
+      "colors": { "background": "#0E1512", "paper": "#E9EFE4", "accent": "#C6F432" },
+      "grainAmount": 0.45,
+      "stopMotionFps": 6,
+      "seed": 42
+    }
+  }
+]

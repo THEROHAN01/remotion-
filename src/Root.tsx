@@ -7,6 +7,12 @@ import {
 } from "./KineticType/KineticType";
 import { kineticTypeSchema } from "./KineticType/schema";
 import { statStorySchema } from "./StatStory/schema";
+import {
+  GRAIN_FPS,
+  GRAIN_FRAMES,
+  GrainOpener,
+} from "./GrainOpener/GrainOpener";
+import { grainOpenerSchema } from "./GrainOpener/schema";
 import { calculateStatStoryMetadata, StatStory } from "./StatStory/StatStory";
 import {
   calculateLaunchPromoMetadata,
@@ -363,6 +369,60 @@ export const RemotionRoot: React.FC = () => {
               highlight: "#2F5BEA",
               muted: "#BDB9B1",
             },
+          }}
+        />
+      </Folder>
+      <Folder name="GrainOpener">
+        <Composition
+          id="GrainOpener"
+          component={GrainOpener}
+          schema={grainOpenerSchema}
+          durationInFrames={GRAIN_FRAMES}
+          fps={GRAIN_FPS}
+          width={1920}
+          height={1080}
+          defaultProps={{
+            title: "The Makers",
+            subtitle: "episode 01 — stories from the workshop",
+            photos: [
+              { src: "photos/hands.svg" },
+              { src: "photos/portrait.svg", tint: true },
+              { src: "photos/skyline.svg" },
+            ],
+            colors: {
+              background: "#16130F",
+              paper: "#EDE6D6",
+              accent: "#E4572E",
+            },
+            grainAmount: 0.35,
+            stopMotionFps: 8,
+            seed: 7,
+          }}
+        />
+        <Composition
+          id="GrainOpener-Vertical"
+          component={GrainOpener}
+          schema={grainOpenerSchema}
+          durationInFrames={GRAIN_FRAMES}
+          fps={GRAIN_FPS}
+          width={1080}
+          height={1920}
+          defaultProps={{
+            title: "The Makers",
+            subtitle: "episode 01 — stories from the workshop",
+            photos: [
+              { src: "photos/hands.svg" },
+              { src: "photos/portrait.svg", tint: true },
+              { src: "photos/skyline.svg" },
+            ],
+            colors: {
+              background: "#16130F",
+              paper: "#EDE6D6",
+              accent: "#E4572E",
+            },
+            grainAmount: 0.35,
+            stopMotionFps: 8,
+            seed: 7,
           }}
         />
       </Folder>
