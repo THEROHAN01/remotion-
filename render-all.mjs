@@ -5,6 +5,9 @@
 //   node render-all.mjs --data=data/flash-sale.json  # one variants file
 //   node render-all.mjs --only=ledgerly-beta         # a subset (comma-separated slugs)
 //
+// Variants with a `voiceover` section get Cartesia audio generated first
+// (needs CARTESIA_API_KEY in .env; see .env.example and scripts/voiceover.mjs).
+//
 // Set REMOTION_BROWSER_EXECUTABLE to use an existing Chrome/Chromium instead of
 // letting Remotion download its headless shell.
 
@@ -13,6 +16,7 @@ import { renderMedia, selectComposition } from "@remotion/renderer";
 import { mkdir, readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { generateForFiles, loadEnv } from "./scripts/voiceover.mjs";
 
 const DEFAULT_COMPOSITION = "LaunchPromo";
 const root = path.dirname(fileURLToPath(import.meta.url));
@@ -20,6 +24,7 @@ const root = path.dirname(fileURLToPath(import.meta.url));
 const arg = (name) =>
   process.argv.find((a) => a.startsWith(`--${name}=`))?.slice(name.length + 3);
 
+loadEnv(root);
 const dataArg = arg("data");
 const only = arg("only")?.split(",").filter(Boolean);
 const browserExecutable = process.env.REMOTION_BROWSER_EXECUTABLE ?? null;
@@ -30,6 +35,18 @@ const dataFiles = dataArg
       .filter((f) => f.endsWith(".json"))
       .sort()
       .map((f) => path.join(root, "data", f));
+
+// Cartesia voiceover for variants that have a `voiceover` section (skips unchanged lines).
+// A variant whose voiceover can't be generated is skipped; the rest still render.
+const voiceoverFailures = await generateForFiles(
+  dataFiles,
+  root,
+  arg("only")?.split(",").filter(Boolean),
+);
+for (const f of voiceoverFailures) {
+  console.error(`✖ ${f.slug}: voiceover not generated (${f.message})`);
+}
+const skip = new Set(voiceoverFailures.map((f) => f.slug));
 
 const variants = [];
 for (const file of dataFiles) {
@@ -42,9 +59,13 @@ for (const file of dataFiles) {
   variants.push(...list);
 }
 
-const selected = only
-  ? variants.filter((v) => only.includes(v.slug))
-  : variants;
+const selected = (
+  only ? variants.filter((v) => only.includes(v.slug)) : variants
+).filter((v) => !skip.has(v.slug));
+if (selected.length === 0 && skip.size > 0) {
+  console.error("\nNothing left to render.");
+  process.exit(1);
+}
 if (selected.length === 0) {
   throw new Error(
     `No variants matched ${only?.join(", ") ?? dataFiles.join(", ")}`,
@@ -109,6 +130,7 @@ for (const [i, variant] of selected.entries()) {
   }
 }
 
+failures.push(...skip);
 if (failures.length > 0) {
   console.error(
     `\n${failures.length} variant(s) failed: ${failures.join(", ")}`,

@@ -18,6 +18,7 @@
     "zod": "4.5.4"
   },
   "devDependencies": {
+    "@cartesia/cartesia-js": "^4.2.0",
     "@remotion/eslint-config-flat": "4.0.532",
     "@types/react": "19.2.7",
     "@types/web": "0.0.166",
@@ -30,6 +31,7 @@
     "build": "remotion bundle",
     "upgrade": "remotion upgrade",
     "lint": "eslint src && tsc",
-    "render:all": "node render-all.mjs"
+    "render:all": "node render-all.mjs",
+    "voiceover": "node scripts/generate-voiceover.mjs"
   }
 }

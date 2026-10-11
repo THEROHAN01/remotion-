@@ -1,6 +1,7 @@
 import { zColor } from "@remotion/zod-types";
 import { z } from "zod";
 import { soundSchema } from "../shared/sfx";
+import { voiceoverSchema } from "../shared/voiceover";
 
 export const beatStyles = [
   "slam",
@@ -32,6 +33,7 @@ export const kineticTypeSchema = z.object({
   showBrandName: z.boolean().optional(),
   url: z.string().optional(),
   sound: soundSchema,
+  voiceover: voiceoverSchema,
   cta: z.string().min(1),
   outroSeconds: z.number().min(1).max(10),
   colors: z.object({

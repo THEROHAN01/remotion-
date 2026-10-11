@@ -32,6 +32,35 @@ Leave `sound` out for a silent render. Cues are placed by the template itself (`
 | KineticType | ✅ slam: impact + sub · stack: click per line · invert: thud + sub · wipe: panned whoosh per fragment · shatter: hit + glass break · highlight: ticks + marker swipe · outro: chime, pop, tick |
 | LaunchPromo, FlashSale, StatStory, GrainOpener | not yet |
 
+## Voiceover (Cartesia)
+
+Any variant can carry a spoken script, generated with [Cartesia](https://cartesia.ai) text-to-speech.
+
+1. Copy `.env.example` to `.env` and put your key in it: `CARTESIA_API_KEY=...` (`.env` is git-ignored).
+2. Add a `voiceover` section to the variant's props:
+
+```json
+"voiceover": {
+  "voiceId": "e07c00bc-4134-4eae-9ea4-1a55fb45746b",
+  "model": "sonic-3",
+  "language": "en",
+  "speed": 1.05,
+  "emotion": "confident",
+  "volume": 1,
+  "duckSfx": 0.45,
+  "lines": [
+    { "text": "Hiring engineers takes weeks.", "at": 0.2 },
+    { "text": "Not with Emplyify.", "at": 4.0 }
+  ]
+}
+```
+
+- `at` is when the line starts, in seconds. Pick voice IDs from Cartesia's voice library; `speed` (0.6–1.5) and `emotion` apply to sonic-3 models.
+- `duckSfx` lowers the sound effects while a voiceover is present (0.45 = 45 % volume).
+3. Run `npm run voiceover` (or just `npm run render:all`, which generates missing audio first). Audio is saved to `public/voiceover/<slug>/` and each line gets an `audio` entry written back into the data file. Unchanged lines are never re-generated, so you only pay for edits. A warning is printed if a line runs into the next one.
+
+If the key is missing, that variant is skipped with a message and all other videos still render. Currently wired into **KineticType**; example: `emplyify-square-vo` in `data/kinetic-type.json`.
+
 ## LaunchPromo
 
 A 1080×1920 (Reels/Shorts) 30fps promo video. Every bit of text, the colors, the feature list, the task list and the duration come from props validated by a Zod schema (`src/LaunchPromo/schema.ts`).

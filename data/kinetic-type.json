@@ -147,5 +147,95 @@
         "sfxVolume": 0.9
       }
     }
+  },
+  {
+    "slug": "emplyify-square-vo",
+    "composition": "KineticType-Square",
+    "props": {
+      "beats": [
+        {
+          "text": "Hiring?",
+          "style": "slam",
+          "seconds": 1.4
+        },
+        {
+          "text": "Weeks lost / CV dumps / Zero updates",
+          "style": "stack",
+          "seconds": 2.6
+        },
+        {
+          "text": "Not here.",
+          "style": "invert",
+          "seconds": 1.4
+        },
+        {
+          "text": "AI searches / People vet / 3–5 picks / Pay on hire",
+          "style": "wipe",
+          "seconds": 2.8
+        },
+        {
+          "text": "72H",
+          "style": "shatter",
+          "seconds": 1.8
+        },
+        {
+          "text": "Vetted tech / talent / in 72 hours",
+          "style": "highlight",
+          "accentWord": "72",
+          "seconds": 2.4
+        }
+      ],
+      "brandName": "Emplyify",
+      "logo": "brand/emplyify-logo.png",
+      "logoBackground": "#FFFFFF",
+      "showBrandName": false,
+      "url": "emplyify-new.vercel.app",
+      "cta": "Submit a role",
+      "outroSeconds": 2.6,
+      "colors": {
+        "background": "#0B1B33",
+        "text": "#FFFFFF",
+        "accent": "#2F5BFF"
+      },
+      "sound": {
+        "sfx": true,
+        "sfxVolume": 0.9
+      },
+      "voiceover": {
+        "voiceId": "e07c00bc-4134-4eae-9ea4-1a55fb45746b",
+        "model": "sonic-3",
+        "language": "en",
+        "speed": 1.05,
+        "emotion": "confident",
+        "volume": 1,
+        "duckSfx": 0.45,
+        "lines": [
+          {
+            "text": "Hiring engineers takes weeks.",
+            "at": 0.2
+          },
+          {
+            "text": "CV dumps. Zero updates.",
+            "at": 2.2
+          },
+          {
+            "text": "Not with Emplyify.",
+            "at": 4
+          },
+          {
+            "text": "AI finds the talent. Senior recruiters vet every shortlist.",
+            "at": 5.4
+          },
+          {
+            "text": "Three to five vetted candidates, in seventy-two hours.",
+            "at": 8.8
+          },
+          {
+            "text": "Submit a role today.",
+            "at": 12.6
+          }
+        ]
+      }
+    }
   }
 ]

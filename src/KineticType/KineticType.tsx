@@ -6,6 +6,7 @@ import {
 } from "remotion";
 import { Highlight, Invert, Outro, Shatter, Slam, Stack, Wipe } from "./Beats";
 import { SoundProvider } from "../shared/sfx";
+import { hasVoiceover, Voiceover } from "../shared/voiceover";
 import type { KineticTypeProps } from "./schema";
 
 const FPS = 30;
@@ -36,13 +37,18 @@ export const KineticType: React.FC<KineticTypeProps> = ({
   showBrandName,
   url,
   sound,
+  voiceover,
   cta,
   outroSeconds,
   colors,
 }) => {
   const { fps } = useVideoConfig();
   return (
-    <SoundProvider sound={sound}>
+    <SoundProvider
+      sound={sound}
+      duck={hasVoiceover(voiceover) ? (voiceover?.duckSfx ?? 0.5) : 1}
+    >
+      <Voiceover voiceover={voiceover} />
       <Series>
         {beats.map((beat, i) => {
           const Component = components[beat.style];

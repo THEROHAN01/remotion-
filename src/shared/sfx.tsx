@@ -35,12 +35,17 @@ const SoundContext = createContext<{ enabled: boolean; volume: number }>({
   volume: 1,
 });
 
+// `duck` scales all effects down, e.g. under a voiceover.
 export const SoundProvider: React.FC<{
   sound: SoundProps;
+  duck?: number;
   children: React.ReactNode;
-}> = ({ sound, children }) => (
+}> = ({ sound, duck = 1, children }) => (
   <SoundContext.Provider
-    value={{ enabled: sound?.sfx ?? false, volume: sound?.sfxVolume ?? 1 }}
+    value={{
+      enabled: sound?.sfx ?? false,
+      volume: (sound?.sfxVolume ?? 1) * duck,
+    }}
   >
     {children}
   </SoundContext.Provider>
