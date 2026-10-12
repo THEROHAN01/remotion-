@@ -1,0 +1,67 @@
+/* Film stage. The site's own CSS (site.css) styles everything inside #site. */
+
+/* Every frame must be a pure function of t: no CSS transitions or animations.
+   Values the site animates with CSS (bubble, toast, brows, blush) are computed in film.js. */
+*, *::before, *::after { transition: none !important; animation: none !important; }
+
+html, body { background: #060607; }
+#viewport {
+  position: absolute; left: 0; top: 0; overflow: hidden;
+  background: #060607;
+}
+#camera { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+#site { position: absolute; left: 0; top: 0; overflow: hidden; background: #060607; }
+
+/* Film canvases are positioned explicitly (site.css styles every <canvas>). */
+canvas.film-canvas { position: absolute; inset: auto; z-index: auto; pointer-events: none; }
+#wall.film-canvas { z-index: 3; }
+#dead.film-canvas { z-index: 20; }
+#fx.film-canvas { left: 0; top: 0; z-index: 40; }
+
+/* Column (phone) layout lives inside a phone-sized box within the film's wider wall. */
+#phone { position: absolute; overflow: hidden; z-index: 5; }
+.column-mode #phone #column { position: absolute; inset: 0; }
+#phone #frame { position: absolute; inset: 0; }
+
+/* Film overlays in viewport space. */
+#titles, #payoff, #lockup { position: absolute; inset: 0; pointer-events: none; z-index: 50; }
+.headline {
+  position: absolute; left: 0; right: 0;
+  text-align: center;
+  font-family: "Instrument Serif", Georgia, serif;
+  font-weight: 400;
+  color: #fff6e8;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+.headline .w { display: inline-block; will-change: auto; }
+
+#pointer { position: absolute; left: 0; top: 0; z-index: 60; width: 22px; height: 30px; transform-origin: 2px 2px; }
+#touch {
+  position: absolute; left: 0; top: 0; z-index: 60;
+  width: 46px; height: 46px; margin: -23px 0 0 -23px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 246, 232, 0.9);
+  background: rgba(255, 246, 232, 0.16);
+}
+
+.payoff-bubble {
+  position: absolute; left: 0; top: 0;
+  transform-origin: 0 0;
+  margin: 0;
+  padding: 6px 12px 5px;
+  font: 400 14px / 1.35 "Architects Daughter", "Geist", sans-serif;
+  color: #060607;
+  background: #fff6e8;
+  border-radius: 4px 14px 14px 14px;
+  white-space: nowrap;
+}
+
+.lock-line {
+  position: absolute; left: 0; right: 0; text-align: center; white-space: nowrap;
+  color: #fff6e8;
+}
+.lock-name { font-family: "Instrument Serif", Georgia, serif; font-weight: 400; letter-spacing: -0.005em; }
+.lock-role { font-family: "Geist Mono", monospace; letter-spacing: -0.02em; color: color-mix(in srgb, #fff6e8 55%, #060607); }
+.lock-tag { font-family: "Geist", sans-serif; color: color-mix(in srgb, #fff6e8 82%, #060607); }
+.lock-url { font-family: "Geist Mono", monospace; color: #8fe3d4; }

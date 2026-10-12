@@ -1,0 +1,803 @@
+/* Extracted verbatim from rohan.dev/index.html by tools/extract.mjs. */
+
+  /*
+   * Type: Geist for text, Geist Mono for meta and labels, Instrument Serif
+   * for the name and pane titles (all OFL, self-hosted Latin subsets because
+   * the CSP only allows same-origin fonts). The handwritten bubbles use
+   * Architects Daughter.
+   */
+  @font-face {
+    font-family: "Geist";
+    font-style: normal;
+    font-weight: 400 600;
+    font-display: swap;
+    src: url("../assets/fonts/geist-latin.woff2") format("woff2");
+  }
+  @font-face {
+    font-family: "Geist Mono";
+    font-style: normal;
+    font-weight: 400 500;
+    font-display: swap;
+    src: url("../assets/fonts/geist-mono-latin.woff2") format("woff2");
+  }
+  @font-face {
+    font-family: "Instrument Serif";
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url("../assets/fonts/instrument-serif-latin.woff2") format("woff2");
+  }
+  :root {
+    --bg: #060607;
+    /* Matte finish: a faint static film grain over the dark surfaces. */
+    --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .032 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    --line: color-mix(in srgb, var(--accent) 5%, var(--bg));
+    --ink: #fff6e8;
+    --accent: #17c3a2;
+    --link: #8fe3d4;
+    --link-on: #5fd6c0;
+    --tile: 19px;
+    --gap: 1px;
+    --cell: 20px;
+    --fs: calc(var(--tile) * 0.7);
+    --lh: var(--cell);
+    --font: "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Arial, sans-serif;
+    --mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --display: "Instrument Serif", "Iowan Old Style", Georgia, serif;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    overscroll-behavior: none;
+    touch-action: pinch-zoom;
+    background: var(--bg);
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  body {
+    color: var(--ink);
+    font: 400 var(--fs) / var(--lh) var(--font);
+    font-synthesis: none;
+    font-kerning: normal;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* The page fits the screen: visitors can't pan sideways; only the camera
+     (opening and closing panes) moves the strip. */
+  #stage {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    overscroll-behavior-y: none;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    background: var(--bg);
+    touch-action: pinch-zoom;
+  }
+  #stage::-webkit-scrollbar {
+    display: none;
+  }
+  #world {
+    position: relative;
+    width: var(--world-w, 100%);
+    min-width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: var(--bg);
+  }
+  canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 3;
+    pointer-events: none;
+  }
+
+  /* The animated grid can end on a fractional row at arbitrary viewport
+     heights. Keep the outer frame structural so every edge is always one
+     complete 20px cell, independent of canvas and content geometry. */
+  #frame {
+    position: absolute;
+    inset: 0;
+    z-index: 6;
+    pointer-events: none;
+  }
+  .frame-edge {
+    position: absolute;
+    display: block;
+    background-color: var(--bg);
+  }
+  .frame-top,
+  .frame-bottom {
+    left: 0;
+    width: 100%;
+    height: var(--cell);
+    background-image:
+      linear-gradient(to bottom, transparent 0 var(--tile), var(--bg) var(--tile) var(--cell)),
+      repeating-linear-gradient(to right, var(--line) 0 var(--tile), var(--bg) var(--tile) var(--cell));
+  }
+  .frame-top { top: 0; }
+  .frame-bottom { bottom: -1px; }
+  .frame-left,
+  .frame-right {
+    top: 0;
+    width: var(--cell);
+    height: 100%;
+    background-image:
+      linear-gradient(to right, transparent 0 var(--tile), var(--bg) var(--tile) var(--cell)),
+      repeating-linear-gradient(to bottom, var(--line) 0 var(--tile), var(--bg) var(--tile) var(--cell));
+  }
+  .frame-left { left: 0; }
+  .frame-right { right: -1px; }
+  .frame-top,
+  .frame-bottom { z-index: 2; }
+
+  /*
+   * SIDEBAR: solid, inset by one unlit tile. A second bar can open
+   * to the right and eat the same width of color tiles.
+   */
+  #deck {
+    --text-amt: 1;
+    position: absolute;
+    top: var(--pane-top, 20px);
+    left: var(--side-pad, 20px);
+    width: var(--pane-w, 25%);
+    height: var(--pane-h, calc(100% - 40px));
+    z-index: 4;
+    overflow: hidden;
+    pointer-events: none;
+    overscroll-behavior: none;
+    background: var(--bg);
+  }
+  #deck.show {
+    pointer-events: auto;
+  }
+  #drawer,
+  #detail {
+    position: absolute;
+    top: var(--pane-top, 20px);
+    width: var(--pane-w, 25%);
+    height: var(--pane-h, calc(100% - 40px));
+    z-index: 2;
+    overflow: hidden;
+    display: none;
+    background: var(--bg);
+  }
+  #drawer {
+    left: var(--drawer-left, calc(var(--side-pad, 20px) + var(--pane-w, 25%)));
+  }
+  #detail {
+    left: var(--detail-left, calc(var(--side-pad, 20px) + var(--pane-w, 25%) + var(--pane-w, 25%)));
+  }
+  #drawer::before,
+  #detail::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 1.5px;
+    z-index: 1;
+    pointer-events: none;
+    background: var(--line);
+  }
+  #drawer.open,
+  #detail.open {
+    display: block;
+    pointer-events: auto;
+  }
+  #drawer-body,
+  #detail-body {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+  #drawer .pane,
+  #detail .pane {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+  }
+  #strip {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    gap: var(--pane-gap, 0px);
+    padding: 0;
+    height: 100%;
+    width: max-content;
+    transform: translate3d(calc(-1 * var(--strip-x, 0px)), 0, 0);
+    will-change: transform;
+  }
+  .pane {
+    font: 400 var(--fs) / var(--lh) var(--font);
+    flex: 0 0 auto;
+    width: var(--pane-w, 25%);
+    height: 100%;
+    margin: 0;
+    padding: max(var(--cell), env(safe-area-inset-top, 0px))
+             max(var(--cell), env(safe-area-inset-right, 0px))
+             max(var(--cell), env(safe-area-inset-bottom, 0px))
+             max(var(--cell), env(safe-area-inset-left, 0px));
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: auto;
+    overscroll-behavior-y: contain;
+    touch-action: pan-y pinch-zoom;
+    /* Text isn't selectable (no casual copy); the email has its own copy button. */
+    -webkit-user-select: none;
+    user-select: none;
+    color: var(--ink);
+    background: var(--bg);
+    scrollbar-width: thin;
+    scrollbar-color: var(--line) transparent;
+  }
+  .pane,
+  #deck,
+  #drawer,
+  #detail { background-image: var(--grain); }
+  .pane > * { position: relative; opacity: var(--text-amt); }
+  .pane a {
+    color: var(--link);
+    text-decoration: none;
+    transition: color 0.4s linear;
+    touch-action: manipulation;
+    -webkit-touch-callout: none;
+  }
+  .pane a:hover,
+  .pane a:focus-visible,
+  .pane a.is-on { color: var(--link-on); }
+  .editorial a.text-link { text-decoration: underline; }
+
+  .editorial {
+    font: 400 1rem / 1.5 var(--font);
+    padding: var(--cell);
+  }
+  /* A pane title can link out (e.g. to the company site), with the company's mark. */
+  .pane .co-logo {
+    display: inline-block;
+    width: 0.92em;
+    height: 0.92em;
+    margin-right: 0.32em;
+    vertical-align: -0.1em;
+  }
+  .pane a.title-link { color: var(--ink); }
+  .pane a.title-link::after {
+    content: "\2197";
+    margin-left: 0.25em;
+    font-family: var(--font);
+    font-size: 0.55em;
+    vertical-align: 0.5em;
+    color: color-mix(in srgb, var(--ink) 45%, var(--bg));
+    transition: color 0.2s ease;
+  }
+  .pane a.title-link:hover,
+  .pane a.title-link:focus-visible { color: var(--link-on); }
+  .pane a.title-link:hover::after,
+  .pane a.title-link:focus-visible::after { color: var(--link-on); }
+  /* Pane titles and the name are set in the display serif. */
+  .editorial .name {
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: 1.6rem;
+    line-height: 1.1;
+    letter-spacing: -0.005em;
+  }
+  .editorial .title-label {
+    position: relative;
+    display: inline-block;
+    max-width: calc(100% - 1.5rem);
+    line-height: 1;
+    vertical-align: baseline;
+  }
+  @supports (text-box-trim: trim-both) and (text-box-edge: cap alphabetic) {
+    .editorial .title-label,
+    .work-list .link-label {
+      text-box-trim: trim-both;
+      text-box-edge: cap alphabetic;
+    }
+  }
+  .editorial i, .editorial em, .pane i, .pane em { font-style: italic; }
+  .editorial h1 {
+    margin: 0 0 8px;
+    font: inherit;
+    font-weight: 400;
+  }
+  .editorial p {
+    margin: 0 0 1em;
+    max-width: none;
+    text-align: left;
+    hyphens: none;
+  }
+  .editorial .role {
+    color: color-mix(in srgb, var(--ink) 60%, var(--bg));
+  }
+  .editorial .name + .role { margin-top: -0.6em; font-family: var(--mono); font-size: 0.8rem; }
+  .work-list .role { font-size: 0.875em; }
+  .editorial .arrow-list {
+    margin: 0 0 1em;
+    padding: 0;
+    list-style: none;
+  }
+  .editorial .arrow-list li {
+    position: relative;
+    margin: 0 0 0.5em;
+    padding-left: 1.4em;
+  }
+  .editorial .arrow-list li::before {
+    content: "\2192";
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+  }
+  #about {
+    display: flex;
+    flex-direction: column;
+  }
+  .work-list {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+  }
+  nav.work-list {
+    margin: 0 0 1em;
+  }
+  .work-list a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 1.5em;
+    gap: 0.35em;
+  }
+  .work-list .link-label {
+    display: inline-block;
+    line-height: 1;
+  }
+  .close-icon {
+    position: relative;
+    display: inline-block;
+    flex: 0 0 auto;
+    width: 0.62em;
+    height: 0.62em;
+    background: currentColor;
+    border-radius: 50%;
+  }
+  .close-icon svg {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  .close-icon path {
+    fill: none;
+    stroke: var(--bg);
+    stroke-width: 1.6;
+    stroke-linecap: round;
+  }
+  .pane-close {
+    position: absolute;
+    top: 50%;
+    left: calc(100% + 0.15rem);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    transform: translateY(-50%);
+  }
+  #stage.stack-clipped .pane-close {
+    display: inline-flex;
+  }
+  /* ---- About pane: portrait-led header, meta list, pills, labelled rows ---- */
+  .editorial .me-head {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    margin: 8px 0 18px;
+  }
+  .editorial .me-id { min-width: 0; padding-bottom: 2px; }
+  .editorial .me-id .name { margin: 0; font-size: 1.5rem; line-height: 1.05; white-space: nowrap; }
+  .editorial .me-role {
+    margin: 2px 0 0;
+    white-space: nowrap;
+    letter-spacing: -0.02em;
+    font: 400 0.66rem / 1.4 var(--mono);
+    color: color-mix(in srgb, var(--ink) 55%, var(--bg));
+  }
+  .editorial .me-meta {
+    display: grid;
+    gap: 7px;
+    margin: 0 0 28px; /* room for the "copied" note under the email */
+    padding: 0;
+    list-style: none;
+    font: 400 0.78rem / 1.35 var(--mono);
+    color: color-mix(in srgb, var(--ink) 82%, var(--bg));
+  }
+  .me-meta li { display: flex; align-items: center; gap: 9px; min-width: 0; }
+  .me-meta li > span,
+  .me-meta li > a { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .me-ico {
+    flex: 0 0 auto;
+    width: 13px;
+    height: 13px;
+    fill: none;
+    stroke: color-mix(in srgb, var(--ink) 45%, var(--bg));
+    stroke-width: 1.3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  #about .email-row { position: relative; }
+  .me-meta .copy-email { color: inherit; }
+  .me-meta .copy-toast {
+    position: absolute;
+    left: 22px;
+    top: 100%;
+    margin-top: 4px;
+    font-size: 0.72rem;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+  .me-meta .copy-email:hover,
+  .me-meta .copy-email:focus-visible { color: var(--link-on); }
+  .editorial .me-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 0 0 4px;
+  }
+  .pane a.pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 10px 4px;
+    border: 1px solid color-mix(in srgb, var(--ink) 18%, var(--bg));
+    border-radius: 999px;
+    font-size: 0.8rem;
+    line-height: 1.3;
+    color: color-mix(in srgb, var(--ink) 88%, var(--bg));
+    transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease;
+  }
+  .pane a.pill:hover,
+  .pane a.pill:focus-visible {
+    color: var(--link-on);
+    border-color: color-mix(in srgb, var(--link-on) 55%, var(--bg));
+    background-color: color-mix(in srgb, var(--link-on) 8%, transparent);
+  }
+  /* Laptop: the about pane never scrolls. Short windows tighten it in steps
+     instead (smaller gaps and portrait, then labels drop to plain rules). */
+  html:not(.column-mode) #about { overflow: hidden; }
+  /* The 300px pane is tight: a 116px card leaves the name its full width. */
+  html:not(.column-mode) #about .buddy-face { width: 116px; height: 116px; }
+  @media (max-height: 640px) {
+    html:not(.column-mode) #about .me-head { margin: 2px 0 12px; }
+    html:not(.column-mode) #about .buddy-face { width: 96px; height: 96px; }
+    html:not(.column-mode) #about .me-meta { gap: 4px; margin-bottom: 24px; }
+    html:not(.column-mode) #about .sec-label { margin: 12px 0 6px; padding-top: 8px; }
+    html:not(.column-mode) #about .me-bio { font-size: 0.95rem; line-height: 1.4; }
+    html:not(.column-mode) #about .nav-row { margin-bottom: 2px; }
+  }
+  @media (max-height: 540px) {
+    html:not(.column-mode) #about .buddy-face { width: 76px; height: 76px; }
+    html:not(.column-mode) #about .buddy-say {
+      left: calc(100% - 18px);
+      max-width: calc(var(--pane-w, 300px) - 40px - 100% + 18px);
+      padding: 4px 10px 3px;
+      font-size: 12.5px;
+    }
+    html:not(.column-mode) #about .me-head { margin-bottom: 10px; }
+    html:not(.column-mode) #about .me-meta { gap: 2px; margin-bottom: 20px; font-size: 0.74rem; }
+    html:not(.column-mode) #about .me-pills { gap: 4px; }
+    html:not(.column-mode) #about a.pill { padding: 1px 8px 2px; font-size: 0.72rem; }
+    html:not(.column-mode) #about a.pill-icon { width: 24px; height: 24px; padding: 0; }
+    html:not(.column-mode) #about a.pill-icon svg { width: 12px; height: 12px; }
+    html:not(.column-mode) #about .sec-label {
+      height: 0;
+      margin: 10px 0 8px;
+      padding: 0;
+      overflow: hidden;
+      color: transparent;
+    }
+  }
+  @media (max-height: 460px) {
+    html:not(.column-mode) #about .me-meta li:nth-child(3) { display: none; }
+    html:not(.column-mode) #about .me-bio { font-size: 0.88rem; }
+    html:not(.column-mode) #about .me-head { margin-bottom: 6px; }
+  }
+  .pane a.pill-icon {
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+  }
+  .pane a.pill-icon svg { width: 14px; height: 14px; display: block; }
+  /* Small lowercase labels sit on a dotted rule, like a notebook. */
+  .editorial .sec-label {
+    margin: 18px 0 8px;
+    padding-top: 12px;
+    border-top: 1px dotted color-mix(in srgb, var(--ink) 24%, transparent);
+    font: 400 0.72rem / 1 var(--mono);
+    letter-spacing: 0.02em;
+    color: color-mix(in srgb, var(--ink) 45%, var(--bg));
+  }
+  .editorial .me-bio { margin-bottom: 0; }
+  .editorial .nav-row {
+    flex-direction: row;
+    align-items: baseline;
+    gap: 0;
+    margin: 0 0 6px;
+  }
+  .nav-row .nav-key {
+    flex: 0 0 5.75rem;
+    font: 400 0.78rem / 1 var(--mono);
+    color: color-mix(in srgb, var(--ink) 45%, var(--bg));
+  }
+  .copy-toast {
+    color: var(--ink);
+    opacity: 0;
+    transform: translateX(-4px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+  }
+  .copy-toast.on { opacity: 0.6; transform: none; }
+  /* ---- Mobile: one scrolling column over the live grid ----
+     The grid stays a fixed full-screen backdrop; the column's hero and the thin
+     "windows" between sections are transparent so the wall shows through. */
+  #column { display: none; }
+  .column-mode #column {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 7;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y pinch-zoom;
+    scrollbar-width: none;
+  }
+  .column-mode #column::-webkit-scrollbar { display: none; }
+  .column-mode #deck,
+  .column-mode #drawer,
+  .column-mode #detail { display: none !important; }
+  .col-hero { height: 42svh; min-height: 220px; }
+  .col-window { height: 40px; }
+  .column-mode .pane.col-sec {
+    width: auto;
+    height: auto;
+    margin: 0;
+    padding: 22px 20px 26px;
+    overflow: visible;
+    background-color: var(--bg);
+  }
+  /* Wider phones (landscape) keep a readable measure with the wall either side. */
+  .column-mode #column > .col-sec { max-width: 640px; margin-inline: auto; }
+  .column-mode .pane.col-sec:last-child {
+    padding-bottom: calc(48px + env(safe-area-inset-bottom, 0px));
+  }
+  /* The portrait card rises out of the section into the hero, like an avatar
+     over a cover image. */
+  .column-mode #about { padding-top: 0; }
+  .column-mode #about .me-head { margin-top: -60px; }
+  .column-mode #about .me-meta { font-size: 0.82rem; }
+  .column-mode #about .me-id .name { font-size: 2rem; }
+  .column-mode #about .me-role { font-size: 0.74rem; }
+  .column-mode #kpoint::before,
+  .column-mode #projects::before {
+    display: block;
+    margin: 0 0 12px;
+    font: 400 0.72rem / 1 var(--mono);
+    letter-spacing: 0.02em;
+    color: color-mix(in srgb, var(--ink) 45%, var(--bg));
+  }
+  .column-mode #kpoint::before { content: "experience"; }
+  .column-mode #projects::before { content: "projects"; }
+  .column-mode #projects .work-list { gap: 2px; }
+  .column-mode #projects a[data-detail]::after {
+    content: "+";
+    margin-left: 8px;
+    color: color-mix(in srgb, var(--ink) 40%, var(--bg));
+  }
+  .column-mode #projects a[data-detail][aria-expanded="true"]::after { content: "\2212"; }
+  .column-mode .col-detail {
+    width: auto;
+    height: auto;
+    margin: 4px 0 12px;
+    padding: 2px 0 2px 14px;
+    overflow: visible;
+    border-left: 1px dotted color-mix(in srgb, var(--ink) 30%, transparent);
+    background: none;
+    font-size: 0.95rem;
+  }
+  .column-mode .col-detail[hidden] { display: none; }
+  .column-mode .col-detail > .name { display: none; }
+  .column-mode .col-detail p:last-child { margin-bottom: 0; }
+  /* Buddy: the living portrait in the about pane, with handwritten speech. */
+  @font-face {
+    font-family: "Architects Daughter";
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url("../assets/fonts/architects-daughter-latin.woff2") format("woff2");
+  }
+  .buddy-say {
+    margin: 0;
+    max-width: 220px;
+    padding: 6px 12px 5px;
+    font: 400 14px / 1.35 "Architects Daughter", var(--font);
+    color: var(--bg);
+    background: var(--ink);
+    border-radius: 14px 14px 14px 4px;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(4px) scale(0.96);
+    transform-origin: 0 100%;
+    transition: opacity 0.18s ease, transform 0.18s ease;
+  }
+  .buddy-say.on { opacity: 1; transform: none; }
+  /* A guide hint: the bubble itself is clickable and its target glows. */
+  .buddy-say.on.hint { pointer-events: auto; cursor: pointer; }
+  .buddy-say.on.hint:hover { background: color-mix(in srgb, var(--link-on) 22%, var(--ink)); }
+  /* The hinted target gets a solid, square-cornered marker block and a sharp
+     pointer to its right. Static: no pulse, no rounding. */
+  .pane .hint-glow,
+  .pane a.hint-glow,
+  .pane a.pill.hint-glow {
+    position: relative;
+    color: var(--bg) !important;
+    background: var(--link-on);
+    border-color: var(--link-on);
+    border-radius: 0;
+    box-shadow: -4px 0 0 var(--link-on), 4px 0 0 var(--link-on);
+  }
+  .me-meta li > a.hint-glow { overflow: visible; }
+  .pane .hint-glow .me-ico,
+  .pane .hint-glow svg { stroke: var(--bg); }
+  .pane .hint-glow::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: -17px;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 5px 8px 5px 0;
+    border-color: transparent var(--link-on) transparent transparent;
+    transform: translateY(-50%);
+    pointer-events: none;
+  }
+  .buddy-portrait {
+    position: relative;
+    flex: 0 0 auto;
+    transition: opacity 0.6s ease;
+  }
+  /* The pane allows text selection; the portrait shouldn't turn blue on a
+     double-click or flash on tap. */
+  .buddy-portrait {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  /* Hidden until the drawing loads, but it keeps its slot so the header
+     doesn't jump when it appears. */
+  .buddy-portrait[hidden] { display: block; visibility: hidden; }
+  .buddy-portrait:not(.in) { opacity: 0; }
+  /* The bubble pops from the portrait's top-right corner and grows downward
+     over the header, wrapping within the room left in the pane (100% here is
+     the portrait's width). */
+  .buddy-portrait .buddy-say {
+    position: absolute;
+    top: -6px;
+    left: calc(100% + 8px);
+    z-index: 2;
+    width: max-content;
+    max-width: calc(var(--pane-w, 300px) - 40px - 100% - 8px);
+    border-radius: 4px 14px 14px 14px;
+    transform-origin: 0 0;
+    overflow-wrap: anywhere;
+  }
+  .column-mode .buddy-portrait .buddy-say {
+    max-width: min(240px, calc(100vw - 40px - 100% - 8px));
+  }
+  .buddy-face {
+    /* A cream paper card with dark ink, so the hair stays dark on this site. */
+    --buddy-box: var(--ink);
+    position: relative;
+    flex: 0 0 auto;
+    width: 120px;
+    height: 120px;
+    padding: 0;
+    border: 0;
+    border-radius: 16px;
+    background: var(--buddy-box);
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--ink) 30%, var(--bg)), 0 10px 24px -12px rgb(0 0 0 / 0.6);
+    color: var(--bg);
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+  .buddy-face:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  /* Image-based portrait: a line drawing with no eyes, plus brow layers and a
+     live overlay (pupils hung from each eyelid curve, blush, mouths). */
+  .buddy-art { position: absolute; inset: 0; overflow: hidden; border-radius: 16px; }
+  /* Zoomed to the head: the drawing's x 190-1030 / y 60-900 fills the card. */
+  .buddy-art-inner {
+    position: absolute;
+    left: -22.6%;
+    top: -7.1%;
+    width: 149.3%;
+    height: 149.3%;
+    transform-origin: 48% 62%;
+    transform: rotate(var(--lean, 0deg));
+  }
+  .buddy-art img,
+  .buddy-art svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    -webkit-user-drag: none;
+  }
+  .buddy-art-brow { transition: transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1); }
+  .buddy-art-brow-l { transform-origin: 33.4% 34.1%; }
+  .buddy-art-brow-r { transform-origin: 47.8% 31.5%; }
+  .buddy-face[data-brows="up"] .buddy-art-brow { transform: translateY(-1.4%); }
+  .buddy-face[data-brows="skeptic"] .buddy-art-brow-r { transform: translateY(-1.8%) rotate(-3deg); }
+  .buddy-face[data-brows="cross"] .buddy-art-brow-l { transform: translateY(0.6%) rotate(7deg); }
+  .buddy-face[data-brows="cross"] .buddy-art-brow-r { transform: translateY(0.6%) rotate(-6deg); }
+  .buddy-art .art-pupil { fill: var(--bg); }
+  .buddy-art .am { display: none; fill: none; stroke: var(--bg); stroke-width: 10; stroke-linecap: round; }
+  .buddy-art .am-o { fill: var(--bg); stroke: none; }
+  .buddy-face[data-mouth="rest"] .am-rest,
+  .buddy-face[data-mouth="smile"] .am-smile,
+  .buddy-face[data-mouth="o"] .am-o,
+  .buddy-face[data-mouth="frown"] .am-frown { display: inline; }
+  .buddy-art .art-blush { opacity: 0; transition: opacity 0.6s ease-out; }
+  .buddy-face[data-blush="1"] .art-blush { opacity: 1; }
+  .buddy-face[data-shake="1"] .buddy-art-inner { animation: buddy-shake 0.5s ease; }
+  @keyframes buddy-shake {
+    0%, 100% { transform: none; }
+    20% { transform: translateX(-3px); }
+    40% { transform: translateX(3px); }
+    60% { transform: translateX(-2px); }
+    80% { transform: translateX(2px); }
+  }
+  .buddy-z {
+    position: absolute;
+    top: 4px;
+    right: -16px;
+    font: 400 16px / 1 "Architects Daughter", var(--font);
+    color: var(--ink);
+    z-index: 1;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .buddy-z:nth-of-type(2) { font-size: 20px; }
+  .buddy-z:nth-of-type(3) { font-size: 25px; }
+  .buddy-face.asleep .buddy-z { animation: buddy-z 2.9s ease-out infinite; }
+  .buddy-face.asleep .buddy-z:nth-of-type(2) { animation-delay: 0.45s; }
+  .buddy-face.asleep .buddy-z:nth-of-type(3) { animation-delay: 0.9s; }
+  @keyframes buddy-z {
+    0% { opacity: 0; transform: translate(0, 0); }
+    15% { opacity: 1; }
+    70% { opacity: 0.8; }
+    100% { opacity: 0; transform: translate(14px, -32px); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .buddy-art-inner { animation: none; }
+    .buddy-z { display: none; }
+  }
+  /* Sound-toggle button and #site-audio CSS removed: no audio asset ships
+     with this build (see the JS-side note further down). */
