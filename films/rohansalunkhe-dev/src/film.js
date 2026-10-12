@@ -334,7 +334,6 @@ function renderPanes(S) {
 }
 
 function renderColumn(S, t) {
-  columnEl.scrollTop = S.colScroll;
   // Film: the column stays below the frame while the wall shows the wordmark, then rises into place.
   const rise = spring(clamp01((t - TL.T.columnRise) / DUR.long));
   columnEl.style.transform = rise >= 1 ? "" : `translateY(${(1 - rise) * L.VH}px)`;
@@ -343,6 +342,8 @@ function renderColumn(S, t) {
   d.hidden = !open;
   $('a[data-detail="project-jarvis"]', projects).setAttribute("aria-expanded", open ? "true" : "false");
   for (const a of projects.querySelectorAll("a[data-detail]")) if (a.dataset.detail !== "project-jarvis") a.setAttribute("aria-expanded", "false");
+  // Scroll after the expand so the column's height is final (otherwise the browser clamps it).
+  columnEl.scrollTop = S.colScroll;
   $("a[data-work]", about).classList.toggle("hint-glow", S.hint === "experience");
   $("#frame", phoneEl).style.opacity = TL.phoneAmt(t);
 }
@@ -455,7 +456,10 @@ function renderPayoffAndSignoff(t, S, toView, z) {
     bubble.style.color = m > 0 ? `rgba(6,6,7,${1 - Math.min(1, m * 3)})` : "";
     bubble.style.background = m > 0 ? mixColor("#fff6e8", wordFill(first.hue), m) : "";
     bubble.style.transform = `translate(${x}px, ${y}px) scale(${sx}, ${sy})`;
-  } else payoff.style.display = "none";
+  } else {
+    payoff.style.display = "none";
+    bubble.removeAttribute("style"); bubble.textContent = "";
+  }
 
   // Tiles leave the unlit grid, light up and stream into ROHAN; the finished
   // wordmark keeps the wall's own shimmer (the site's fbm brightness field).
@@ -484,7 +488,10 @@ function renderPayoffAndSignoff(t, S, toView, z) {
       ln.n.style.opacity = u;
       ln.n.style.transform = `translateY(${(1 - u) * 14 + ride}px)`;
     }
-  } else lockup.style.display = "none";
+  } else {
+    lockup.style.display = "none";
+    for (const ln of lockEls) { ln.n.style.opacity = ""; ln.n.style.transform = ""; }
+  }
 }
 
 // cubic-bezier(0.34, 1.56, 0.64, 1), solved numerically.
