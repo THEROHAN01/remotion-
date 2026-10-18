@@ -1,5 +1,7 @@
 # Remotion video templates
 
+**Local setup:** `curl -fsSL https://raw.githubusercontent.com/THEROHAN01/remotion-/main/scripts/setup-local.sh | bash` (clones, installs, checks ffmpeg). Rendered examples are in `out/`.
+
 Props-driven, batch-renderable motion templates. Each one has a Zod schema (editable in the Studio sidebar) and example variants in `data/`.
 
 | Template | Compositions | Storyboard | Example data |

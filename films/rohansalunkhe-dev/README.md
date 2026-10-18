@@ -11,7 +11,7 @@ A 41.5 s launch film for [rohansalunkhe.dev](https://rohansalunkhe.dev), built e
 
 ## Render
 
-Requires Node, global Playwright (`npm i -g playwright`), Chromium at `/opt/pw-browsers/...` (or set `CHROME=`), and ffmpeg.
+Requires Node, global Playwright (`npm i -g playwright` + `npx playwright install chromium`; set `CHROME=` to use a different Chromium), and ffmpeg. `bash scripts/setup-local.sh` at the repo root installs all of it.
 
 ```sh
 cd films/rohansalunkhe-dev

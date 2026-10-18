@@ -1,11 +1,14 @@
 // Opens the film page in headless Chromium at the film's layout size and device scale.
 import { createRequire } from "node:module";
 import { execSync } from "node:child_process";
+import { existsSync } from "node:fs";
 import { serve } from "./serve.mjs";
 const require = createRequire(import.meta.url);
 const globalRoot = execSync("npm root -g").toString().trim();
 const { chromium } = require(`${globalRoot}/playwright`);
-export const CHROME = process.env.CHROME || "/opt/pw-browsers/chromium-1194/chrome-linux/chrome";
+// CHROME overrides; else this cloud container's Chromium if present; else Playwright's own (undefined).
+const CLOUD_CHROME = "/opt/pw-browsers/chromium-1194/chrome-linux/chrome";
+export const CHROME = process.env.CHROME || (existsSync(CLOUD_CHROME) ? CLOUD_CHROME : undefined);
 export const SIZES = { landscape: [1024, 576], portrait: [432, 768] };
 export const SCALES = { landscape: 1.875, portrait: 2.5 };   // → 1920×1080 and 1080×1920
 
